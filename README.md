@@ -22,6 +22,7 @@
 - [ ] GUI界面
 - [ ] 指定根目录扫描所有子目录
 - [ ] 用NLP对学号姓名匹配进行校验
+- [ ] 打包成可执行文件并加入环境变量
 
 
 
@@ -56,7 +57,7 @@ python ack.py
 
 ## Authors
 
-@Alkaidcc
+[@Alkaidcc](https://github.com/Alkaidcc)
 
 ## License
 
