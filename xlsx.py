@@ -1,5 +1,4 @@
 from openpyxl import load_workbook
-from xlrd import sheet
 
 class xlsxParser:
     def __init__(self,path) -> None:
