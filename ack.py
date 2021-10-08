@@ -78,7 +78,7 @@ class Ack:
                 else:
                     check_stuId.append(stu_id)
             
-            if len(check_stuId) == 37:
+            if len(check_stuId) == len(self.stuInfo):
                 # optimizer 
                 print('\033[42m'+os.path.split(roots[0])[1]+"已收齐~"+'\033[0m')
             else:
