@@ -61,5 +61,3 @@ python ack.py
 ## License
 
 This project is licensed under the [MIT] License - see the `LICENSE` file for details
-
-* https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46)
