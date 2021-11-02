@@ -35,6 +35,10 @@
 
 ### 安装
 
+```shell
+git clone https://github.com/Alkaidcc/AutocheckTool.git
+```
+
 ```python
 pip install -r requirements.txt
 ```
@@ -72,7 +76,6 @@ xlsxPath = 'test.xlsx'
 ### 启动
 
 ```shell
-git clone https://github.com/Alkaidcc/AutocheckTool.git
 python ack.py
 ```
 
