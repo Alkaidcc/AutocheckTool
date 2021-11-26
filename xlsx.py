@@ -1,5 +1,4 @@
 from openpyxl import load_workbook
-
 class xlsxParser:
     def __init__(self,path) -> None:
         self.data = load_workbook(path)
@@ -16,4 +15,6 @@ class xlsxParser:
                 break
             self.col2.append(col.value)
         return self.col1, self.col2
+    def getStuIdLen(self):
+        return len(self.sheet['A'][1].value)
 
