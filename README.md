@@ -15,6 +15,7 @@
 - [x] 根据`pyproject.toml`中的`path`来扫描需要检查的文件夹
 - [x] 基础的shell交互
 - [x] 手动输入path来扫描文件夹
+- [x] 打包成可执行文件并加入环境变量
 
 未来可能会实现的功能有：
 
@@ -22,7 +23,7 @@
 - [ ] GUI界面
 - [ ] 指定根目录扫描所有子目录
 - [ ] 用NLP对学号姓名匹配进行校验
-- [ ] 打包成可执行文件并加入环境变量
+
 
 
 
@@ -33,7 +34,13 @@
 * Package: `toml`，`tomlkit`，`openpyxl`
 * Environment: Windows 10+，Python3.9
 
-### 安装
+### 可执行文件
+[下载地址](https://github.com/Alkaidcc/AutocheckTool/releases/tag/v0.0.1)
+
+下载`ack.exe`和pyproject.toml后，只需修改配置文件即可运行
+
+
+### 自己构建
 
 ```shell
 git clone https://github.com/Alkaidcc/AutocheckTool.git
