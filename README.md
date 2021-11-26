@@ -45,7 +45,10 @@ pip install -r requirements.txt
 
 ### 修改配置文件
 
-- `ack.py`中的`configPath`和`xlsxPath`改为`pyproject.toml`和`名单.xlsx`的路径
+- 填写`pyproject.toml`中的`ScanPath`和`XlsxPath`
+- 例子
+  - XlsxPath = 'D:\Develop\Py\test.xlsx'
+  - ScanPath = ['path1','path2']
 
 #### pyproject.toml
 
@@ -79,6 +82,8 @@ xlsxPath = 'test.xlsx'
 python ack.py
 ```
 
+## Tips
+该项目检查时根据.xlsx文件中的学号匹配检查目录下的文件，请务必确保文件夹中的文件名包含学生学号。
 ## Help
 
 欢迎提出pr和issues。
