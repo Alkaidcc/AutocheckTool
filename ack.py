@@ -1,27 +1,25 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+
+from tomlkit.api import parse
 from xlsx import xlsxParser
 from Config import Config
 
 
 class Ack:
-    def __init__(self, config: Config, parser: xlsxParser) -> None:
+    def __init__(self, config: Config) -> None:
         self.config = config
-        self.parser = parser
         self.stuInfo = {}
-    def loadConfig(self):
-        self.paths = self.config.getScanDirFromToml()
-
+        self.stuIdLen = 0
     def getStuInfo(self):
-        stuId, stuName = self.parser.parse()
+        parser = xlsxParser(self.config.xlsxPath)
+        stuId, stuName = parser.parse()
+        self.stuIdLen = parser.getStuIdLen()
         for index, (id, name) in enumerate(zip(stuId, stuName)):
             if index != 0:
                 self.stuInfo[id] = name
         return self.stuInfo
-
-    def getPath(self):
-        return self.paths
 
     def run(self):
         try:
@@ -43,7 +41,7 @@ class Ack:
                 else:
                     choice = int(temp1)
                 if choice == 1:
-                    self.check(self.paths)
+                    self.check(self.config.scanPath)
                 elif choice == 2:
                     paths = [input("请输入扫描目录：")]
                     self.check(paths)
@@ -69,20 +67,19 @@ class Ack:
             # read files and get file stuId
             for it in files[0]:
                 # get student id
-                stu_id = re.findall(r'\d{12}', it)[0]
+                stu_id = re.findall('\d{' + str(self.stuIdLen) +'}', it)[0]
                 if stu_id not in self.stuInfo.keys():
                     print('未知的学号')
-                    # TODO warning color
                     print(stu_id)
                     print("---------")
                 else:
                     check_stuId.append(stu_id)
             
             if len(check_stuId) == len(self.stuInfo):
-                # optimizer 
-                print('\033[42m'+os.path.split(roots[0])[1]+"已收齐~"+'\033[0m')
+                # color
+                # print('\033[42m'+os.path.split(roots[0])[1]+"已收齐~"+'\033[0m')
+                print(os.path.split(roots[0])[1]+"已收齐~")
             else:
-                # count
                 m_cnt = 0
                 print(os.path.split(roots[0])[1]+"未交: ")
                 print("---------")
@@ -95,13 +92,7 @@ class Ack:
         self.run()
 
 
-
-configPath = 'pyproject.toml'
-xlsxPath = 'test.xlsx'
-
 if __name__ == "__main__":
-    ack = Ack(Config(configPath), xlsxParser(xlsxPath))
-    ack.loadConfig()
+    ack = Ack(Config('pyproject.toml'))
     ack.getStuInfo()
-    ack.getPath()
     ack.run()
