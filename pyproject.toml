@@ -6,10 +6,9 @@ authors = ["Alkaidcc <932214806@qq.com>"]
 license = "MIT"
 readme = "README.md"
 
+
 [tool.config]
-path = ['D:\OneDrive\OneDrive - stu.zafu.edu.cn\大三上\OS\OS_lab1',
-        'D:\OneDrive\OneDrive - stu.zafu.edu.cn\大三上\OS\OS_lab2',
-        'D:\OneDrive\OneDrive - stu.zafu.edu.cn\大三上\OS\OS_lab3',
-        'D:\OneDrive\OneDrive - stu.zafu.edu.cn\大三上\移动互联网开发\Android_lab1',
-        'D:\OneDrive\OneDrive - stu.zafu.edu.cn\大三上\移动互联网开发\Android_lab2',
-        'D:\OneDrive\OneDrive - stu.zafu.edu.cn\大三上\移动互联网开发\Android_lab3']
+XlsxPath = 'D:\Develop\Py\test.xlsx'
+ScanPath = ['path1','path2']
+
+
