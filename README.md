@@ -31,7 +31,7 @@
 
 ### 依赖
 
-* Package: `toml`，`tomlkit`，`openpyxl`
+* Package: `tomlkit`，`openpyxl`
 * Environment: Windows 10+，Python3.9
 
 ### 可执行文件
