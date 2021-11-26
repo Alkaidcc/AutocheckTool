@@ -54,19 +54,11 @@ pip install -r requirements.txt
 
 ```toml
 [tool.config]
-path = ['path1','path2']
+XlsxPath = 'D:\Develop\Py\test.xlsx'
+ScanPath = ['path1','path2']
 ```
-
 修改path1,path2……为你需要扫描的路径
 
-#### ack.py
-
-```python
-configPath = 'pyproject.toml'
-xlsxPath = 'test.xlsx'
-```
-
-修改`pyproject.toml`为你的配置文件路径，`xlsxPath`为你的excel表的路径
 
 #### test.xlsx格式
 
