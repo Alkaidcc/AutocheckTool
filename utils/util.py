@@ -1,27 +1,23 @@
-from typing import List, Optional
 import toml
 from pathlib import Path
 
 
 xlsx_path = None
+scan_path = None
 
 def _init_config_file():
     Path('./config.toml').touch()
     _init_config_by_user('./config.toml')
 
-
 def _init_config_by_user(file_path):
     xlsx_path:Path = get_xlsx_path()
-    print("xlsx path:",xlsx_path)
     scan_path:Path = get_scan_path()
-    print("scan path:",scan_path)
     config = {
         'xlsx_path': str(xlsx_path),
         'scan_path': str(scan_path)
     }
     with open(file_path, 'w') as f:
         toml.dump(config, f)
-
 
 def xlsx_valid(xlsx_path: Path):
     if xlsx_path.exists():
@@ -46,18 +42,18 @@ def xlsx_valid(xlsx_path: Path):
         return xlsx_path
 
 def get_xlsx_path() -> Path:
-    path = input("Please input your xlsx path:")
-    # if path contains """" or ''' or " or ' get rid of them
-    path = path.replace("'",'').replace('"','')
-    xlsx_path = Path(path)
+    xlsx_path = Path(trim_quote(input("Please input your xlsx path:")))
     xlsx_path = xlsx_valid(xlsx_path)
     return xlsx_path
 
 def get_scan_path() -> Path:
-    scan_path = Path(input("Please input your scan path:"))
+    scan_path = Path(trim_quote(input("Please input your scan path:")))
     if scan_path.exists():
         return scan_path
     else:
         print("Error: scan path is not exist!")
         scan_path = get_scan_path()
         return scan_path
+
+def trim_quote(s: str) -> str:
+    return s.replace("'",'').replace('"','')
