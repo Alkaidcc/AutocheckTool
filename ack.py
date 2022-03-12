@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-
+import platform
 from tomlkit.api import parse
-from xlsx import xlsxParser
-from Config import Config
+from utils.xlsx import xlsxParser
+from utils.config import Config
 
 
 class Ack:
@@ -76,8 +76,6 @@ class Ack:
                     check_stuId.append(stu_id)
             
             if len(check_stuId) == len(self.stuInfo):
-                # color
-                # print('\033[42m'+os.path.split(roots[0])[1]+"已收齐~"+'\033[0m')
                 print(os.path.split(roots[0])[1]+"已收齐~")
             else:
                 m_cnt = 0
@@ -93,6 +91,10 @@ class Ack:
 
 
 if __name__ == "__main__":
+    if platform.system().lower() == 'windows':
+        print("windows")
+    if platform.system().lower() == 'linux':
+        print("linux")
     ack = Ack(Config('pyproject.toml'))
     ack.getStuInfo()
     ack.run()
