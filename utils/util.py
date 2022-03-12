@@ -9,6 +9,7 @@ CONFIG_PATH = './config.toml'
 xlsx_path = None
 scan_path = None
 result: List[Stu] = []
+STU_ID_LEN = 12
 
 def _init_config_file():
     Path(CONFIG_PATH).touch()
