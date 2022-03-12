@@ -87,5 +87,6 @@ class Ack:
             stu.stu_status = '未提交'
 
 if __name__ == '__main__':
+    os.chdir(os.path.dirname(__file__))
     ack = Ack()
     ack.loop()
