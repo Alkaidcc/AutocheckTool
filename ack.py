@@ -1,5 +1,4 @@
 from pathlib import Path
-from queue import Empty
 import toml
 import os
 import re
@@ -20,6 +19,7 @@ class Ack:
         self.scan_path = config.get('scan_path')
         # Get STU by xlsx_path
         self.stu:List[Stu] = _init_stu_info(self.xlsx_path)
+    
     def loop(self):
         try:
             print('● 1.检查作业上交情况(default)')
@@ -32,8 +32,7 @@ class Ack:
                 print('> ',end='')
                 key2 = input()
                 if key2 == '1' or key2 == '':
-                    pass
-                    # TODO scan for config file
+                    self.check_directory_recursive(self.scan_path)
                 elif key2 == '2':
                     path = Path(trim_quote(input("请输入扫描目录：")))
                     if path.exists():
@@ -72,7 +71,20 @@ class Ack:
                         self.check_stu_id(stu.stu_name,id_from_file[0])
         for stu in self.stu:
             if stu.stu_status == '未提交':
-                print(stu.stu_name,stu.stu_status)   
+                print(stu.stu_name,stu.stu_status)
+        self.reset_data() 
+
+    def check_directory_recursive(self,path):
+        path = Path(path)
+        for item in path.iterdir():
+            if item.is_dir():
+                print(item.name)
+                self.check_directory_recursive(item)
+                self.check_single_directory(item)
+
+    def reset_data(self):
+        for stu in self.stu:
+            stu.stu_status = '未提交'
 
 if __name__ == '__main__':
     ack = Ack()
