@@ -16,13 +16,14 @@
 - [x] 基础的shell交互
 - [x] 手动输入path来扫描文件夹
 - [x] 打包成可执行文件并加入环境变量
+- [x] 指定根目录扫描所有子目录
+- [x] 根据姓名校验学号 
+- [x] 添加了Linux支持 
 
 未来可能会实现的功能有：
 
 - [ ] 更友好的shell交互
 - [ ] GUI界面
-- [ ] 指定根目录扫描所有子目录
-- [ ] 用NLP对学号姓名匹配进行校验
 
 
 
@@ -31,11 +32,11 @@
 
 ### 依赖
 
-* Package: `tomlkit`，`openpyxl`
+* Package: `toml`，`openpyxl`
 * Environment: Windows 10+，Python3.9
 
 ### 可执行文件
-[下载地址](https://github.com/Alkaidcc/AutocheckTool/releases/tag/v0.0.1)
+~~[下载地址](https://github.com/Alkaidcc/AutocheckTool/releases/tag/v0.0.1)~~ 不是最新版本，部分功能不可用。
 
 下载`ack.exe`和pyproject.toml后，只需修改配置文件即可运行
 
@@ -59,21 +60,11 @@ git clone https://github.com/Alkaidcc/AutocheckTool.git
 pip install -r requirements.txt
 ```
 
-### 修改配置文件
+### 初始化设置
+![image](https://user-images.githubusercontent.com/54631354/158011047-4449c264-264d-412e-83b7-d84fb4f2360b.png)
+这里分别填写你的名单文件的路径和需要扫描文件夹的根路径。注意：默认（直接回车）为当前路径。
+初始化后会在本地生成`config.toml`文件，请保证其在根目录下，否则无法正常工作。切换目录可以自行修改。
 
-- 填写`pyproject.toml`中的`ScanPath`和`XlsxPath`
-- 例子
-  - XlsxPath = 'D:\Develop\Py\test.xlsx'
-  - ScanPath = ['path1','path2']
-
-#### pyproject.toml
-
-```toml
-[tool.config]
-XlsxPath = 'D:\Develop\Py\test.xlsx'
-ScanPath = ['path1','path2']
-```
-修改path1,path2……为你需要扫描的路径
 
 
 #### test.xlsx格式
@@ -91,7 +82,17 @@ python ack.py
 ```
 
 ## Tips
-该项目检查时根据.xlsx文件中的学号匹配检查目录下的文件，请务必确保文件夹中的文件名包含学生学号。
+使用递归扫描请使用以下目录结构，`homework`作为扫描的根目录，其他为具体作业的文件夹。
+```
+└── homework
+    ├── java
+    │   ├── aaa.docx
+    │   └── bbb.docx
+    ├── machinelearning
+    │   └── ccc.docx
+    └── python
+        └── ddd.docx
+```
 ## Help
 
 欢迎提出pr和issues。
