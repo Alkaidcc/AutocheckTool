@@ -1,100 +1,58 @@
-# -*- coding: utf-8 -*-
+from pathlib import Path
+import toml
 import os
-import re
-import platform
-from tomlkit.api import parse
-from utils.xlsx import xlsxParser
-from utils.config import Config
+from stu import Stu
+from typing import List
+from utils.util import CONFIG_PATH, _init_config_file, _init_stu_info
 
 
 class Ack:
-    def __init__(self, config: Config) -> None:
-        self.config = config
-        self.stuInfo = {}
-        self.stuIdLen = 0
-    def getStuInfo(self):
-        parser = xlsxParser(self.config.xlsxPath)
-        stuId, stuName = parser.parse()
-        self.stuIdLen = parser.getStuIdLen()
-        for index, (id, name) in enumerate(zip(stuId, stuName)):
-            if index != 0:
-                self.stuInfo[id] = name
-        return self.stuInfo
 
-    def run(self):
+    def __init__(self):
+        self.path = Path(CONFIG_PATH)
+        if not self.path.exists():
+            _init_config_file()
+        # Get PATH
+        config = toml.load(CONFIG_PATH)
+        self.xlsx_path = config.get('xlsx_path')
+        self.scan_path = config.get('scan_path')
+        # Get STU by xlsx_path
+        self.stu:List[Stu] = _init_stu_info(self.xlsx_path)
+    def loop(self):
         try:
             print('● 1.检查作业上交情况(default)')
             print('○ 2.退出')
             print('> ',end='')
-            temp = input()
-            if temp == '':
-                num = 1
-            else:
-                num = int(temp)
-            if num == 1:
+            key1 = input()
+            if key1 == '1' or key1 == '':
                 print('● 1.读取配置文件(default)')
                 print('○ 2.手动输入目录')
                 print('> ',end='')
-                temp1 = input()
-                if temp1 == '':
-                    choice = 1
-                else:
-                    choice = int(temp1)
-                if choice == 1:
-                    self.check(self.config.scanPath)
-                elif choice == 2:
-                    paths = [input("请输入扫描目录：")]
-                    self.check(paths)
+                key2 = input()
+                if key2 == '1' or key2 == '':
+                    pass
+                    # TODO scan for config file
+                elif key2 == '2':
+                    path = Path(input("请输入扫描目录："))
+                    if path.exists():
+                        pass
+                        # TODO
+                    else:
+                        self.loop()
                 else:                
                     print('\n')
-                    self.run()
-            elif num == 2:
+                    self.loop()
+            elif key1 == '2':
                 print("Exit!")
                 os._exit(0)
             else:
                 print("Error!")
-                self.run()
+                self.loop()
+
         except KeyboardInterrupt:
             print("Exit")
+    
 
-    def check(self,path_list):
-        for path in path_list:
-            # file list
-            files = [files for root, dirs, files in os.walk(path)]
-            # directory name
-            roots = [root for root,dirs,files in os.walk(path)]
-            check_stuId = []
-            # read files and get file stuId
-            for it in files[0]:
-                # get student id
-                stu_id = re.findall('\d{' + str(self.stuIdLen) +'}', it)[0]
-                if stu_id not in self.stuInfo.keys():
-                    print('未知的学号')
-                    print(stu_id)
-                    print("---------")
-                else:
-                    check_stuId.append(stu_id)
-            
-            if len(check_stuId) == len(self.stuInfo):
-                print(os.path.split(roots[0])[1]+"已收齐~")
-            else:
-                m_cnt = 0
-                print(os.path.split(roots[0])[1]+"未交: ")
-                print("---------")
-                for x in self.stuInfo.keys():
-                    if x not in check_stuId:
-                        m_cnt = m_cnt + 1
-                        print(self.stuInfo[x])
-                print("---------")
-                print("共计"+str(m_cnt)+"人\n")
-        self.run()
-
-
-if __name__ == "__main__":
-    if platform.system().lower() == 'windows':
-        print("windows")
-    if platform.system().lower() == 'linux':
-        print("linux")
-    ack = Ack(Config('pyproject.toml'))
-    ack.getStuInfo()
-    ack.run()
+if __name__ == '__main__':
+    ack = Ack()
+    ack.loop()
