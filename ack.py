@@ -1,98 +1,91 @@
-# -*- coding: utf-8 -*-
+from pathlib import Path
+import toml
 import os
 import re
-
-from tomlkit.api import parse
-from xlsx import xlsxParser
-from Config import Config
+from stu import Stu
+from typing import List
+from utils.util import CONFIG_PATH, STU_ID_LEN, _init_config_file, _init_stu_info, get_stu_len, trim_quote
 
 
 class Ack:
-    def __init__(self, config: Config) -> None:
-        self.config = config
-        self.stuInfo = {}
-        self.stuIdLen = 0
-    def getStuInfo(self):
-        parser = xlsxParser(self.config.xlsxPath)
-        stuId, stuName = parser.parse()
-        self.stuIdLen = parser.getStuIdLen()
-        for index, (id, name) in enumerate(zip(stuId, stuName)):
-            if index != 0:
-                self.stuInfo[id] = name
-        return self.stuInfo
 
-    def run(self):
+    def __init__(self):
+        self.path = Path(CONFIG_PATH)
+        if not self.path.exists():
+            _init_config_file()
+        # Get PATH
+        config = toml.load(CONFIG_PATH)
+        self.xlsx_path = config.get('xlsx_path')
+        self.scan_path = config.get('scan_path')
+        # Get STU by xlsx_path
+        self.stu:List[Stu] = _init_stu_info(self.xlsx_path)
+    
+    def loop(self):
         try:
             print('● 1.检查作业上交情况(default)')
             print('○ 2.退出')
             print('> ',end='')
-            temp = input()
-            if temp == '':
-                num = 1
-            else:
-                num = int(temp)
-            if num == 1:
+            key1 = input()
+            if key1 == '1' or key1 == '':
                 print('● 1.读取配置文件(default)')
                 print('○ 2.手动输入目录')
                 print('> ',end='')
-                temp1 = input()
-                if temp1 == '':
-                    choice = 1
-                else:
-                    choice = int(temp1)
-                if choice == 1:
-                    self.check(self.config.scanPath)
-                elif choice == 2:
-                    paths = [input("请输入扫描目录：")]
-                    self.check(paths)
+                key2 = input()
+                if key2 == '1' or key2 == '':
+                    self.check_directory_recursive(self.scan_path)
+                elif key2 == '2':
+                    path = Path(trim_quote(input("请输入扫描目录：")))
+                    if path.exists():
+                        self.check_single_directory(path)
+                    else:
+                        self.loop()
                 else:                
                     print('\n')
-                    self.run()
-            elif num == 2:
+                    self.loop()
+            elif key1 == '2':
                 print("Exit!")
                 os._exit(0)
             else:
                 print("Error!")
-                self.run()
+                self.loop()
+
         except KeyboardInterrupt:
             print("Exit")
+    
+    def check_stu_id(self,stu_name,stu_id):
+        for stu in self.stu:
+            if stu.stu_name == stu_name:
+                if stu.stu_id != stu_id:
+                    print('学号不一致：',stu.stu_name,stu_id)
+    
+    def check_single_directory(self,path:Path):
+        if len([p for p in path.iterdir() if p.is_file()]) == get_stu_len():
+            print("已收齐")
+            return
+        for item in path.iterdir():
+            id_from_file = re.findall('\d{'+str(STU_ID_LEN)+'}', item.name)
+            for stu in self.stu:
+                if stu.stu_name in item.name:
+                    stu.stu_status = '已提交'
+                    if id_from_file:
+                        self.check_stu_id(stu.stu_name,id_from_file[0])
+        for stu in self.stu:
+            if stu.stu_status == '未提交':
+                print(stu.stu_name,stu.stu_status)
+        self.reset_data() 
 
-    def check(self,path_list):
-        for path in path_list:
-            # file list
-            files = [files for root, dirs, files in os.walk(path)]
-            # directory name
-            roots = [root for root,dirs,files in os.walk(path)]
-            check_stuId = []
-            # read files and get file stuId
-            for it in files[0]:
-                # get student id
-                stu_id = re.findall('\d{' + str(self.stuIdLen) +'}', it)[0]
-                if stu_id not in self.stuInfo.keys():
-                    print('未知的学号')
-                    print(stu_id)
-                    print("---------")
-                else:
-                    check_stuId.append(stu_id)
-            
-            if len(check_stuId) == len(self.stuInfo):
-                # color
-                # print('\033[42m'+os.path.split(roots[0])[1]+"已收齐~"+'\033[0m')
-                print(os.path.split(roots[0])[1]+"已收齐~")
-            else:
-                m_cnt = 0
-                print(os.path.split(roots[0])[1]+"未交: ")
-                print("---------")
-                for x in self.stuInfo.keys():
-                    if x not in check_stuId:
-                        m_cnt = m_cnt + 1
-                        print(self.stuInfo[x])
-                print("---------")
-                print("共计"+str(m_cnt)+"人\n")
-        self.run()
+    def check_directory_recursive(self,path):
+        path = Path(path)
+        for item in path.iterdir():
+            if item.is_dir():
+                print(item.name)
+                self.check_directory_recursive(item)
+                self.check_single_directory(item)
 
+    def reset_data(self):
+        for stu in self.stu:
+            stu.stu_status = '未提交'
 
-if __name__ == "__main__":
-    ack = Ack(Config('pyproject.toml'))
-    ack.getStuInfo()
-    ack.run()
+if __name__ == '__main__':
+    ack = Ack()
+    ack.loop()

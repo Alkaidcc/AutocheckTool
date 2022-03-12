@@ -8,7 +8,7 @@ readme = "README.md"
 
 
 [tool.config]
-XlsxPath = 'D:\Develop\Py\test.xlsx'
+XlsxPath = '/Alkaidcc/Desktop/AutocheckTool/test.xlsx'
 ScanPath = ['path1','path2']
 
 
