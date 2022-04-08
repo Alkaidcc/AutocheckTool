@@ -18,18 +18,18 @@ class Ack:
         self.xlsx_path = config.get('xlsx_path')
         self.scan_path = config.get('scan_path')
         # Get STU by xlsx_path
-        self.stu:List[Stu] = _init_stu_info(self.xlsx_path)
-    
+        self.stu: List[Stu] = _init_stu_info(self.xlsx_path)
+
     def loop(self):
         try:
             print('● 1.检查作业上交情况(default)')
             print('○ 2.退出')
-            print('> ',end='')
+            print('> ', end='')
             key1 = input()
             if key1 == '1' or key1 == '':
                 print('● 1.读取配置文件(default)')
                 print('○ 2.手动输入目录')
-                print('> ',end='')
+                print('> ', end='')
                 key2 = input()
                 if key2 == '1' or key2 == '':
                     self.check_directory_recursive(self.scan_path)
@@ -39,7 +39,7 @@ class Ack:
                         self.check_single_directory(path)
                     else:
                         self.loop()
-                else:                
+                else:
                     print('\n')
                     self.loop()
             elif key1 == '2':
@@ -51,14 +51,15 @@ class Ack:
 
         except KeyboardInterrupt:
             print("Exit")
-    
-    def check_stu_id(self,stu_name,stu_id):
+
+    def check_stu_id(self, stu_name, stu_id):
         for stu in self.stu:
             if stu.stu_name == stu_name:
                 if stu.stu_id != stu_id:
-                    print('学号不一致：',stu.stu_name,stu_id)
-    
-    def check_single_directory(self,path:Path):
+                    print('学号不一致：', stu.stu_name, stu_id)
+
+    def check_single_directory(self, path: Path):
+        self.reset_data()
         if len([p for p in path.iterdir() if p.is_file()]) == get_stu_len():
             print("已收齐")
             return
@@ -68,23 +69,26 @@ class Ack:
                 if stu.stu_name in item.name:
                     stu.stu_status = '已提交'
                     if id_from_file:
-                        self.check_stu_id(stu.stu_name,id_from_file[0])
+                        self.check_stu_id(stu.stu_name, id_from_file[0])
         for stu in self.stu:
             if stu.stu_status == '未提交':
-                print(stu.stu_name,stu.stu_status)
-        self.reset_data() 
+                print(stu.stu_name, stu.stu_status)
 
-    def check_directory_recursive(self,path):
+    def check_directory_recursive(self, path):
         path = Path(path)
         for item in path.iterdir():
             if item.is_dir():
-                print(item.name)
                 self.check_directory_recursive(item)
-                self.check_single_directory(item)
+            elif item.match('*.docx'):
+                print('\n')
+                print(item.parent.name)
+                self.check_single_directory(item.parent)
+                break
 
     def reset_data(self):
         for stu in self.stu:
             stu.stu_status = '未提交'
+
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(__file__))
