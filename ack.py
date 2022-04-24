@@ -60,19 +60,26 @@ class Ack:
 
     def check_single_directory(self, path: Path):
         self.reset_data()
-        if len([p for p in path.iterdir() if p.is_file()]) == get_stu_len():
-            print("已收齐")
-            return
+        check_count = 0
         for item in path.iterdir():
             id_from_file = re.findall('\d{'+str(STU_ID_LEN)+'}', item.name)
             for stu in self.stu:
                 if stu.stu_name in item.name:
+                    if stu.stu_status == '已提交':
+                        print('重复提交：', stu.stu_name)
+                        return
+                    check_count += 1
                     stu.stu_status = '已提交'
+                    
                     if id_from_file:
                         self.check_stu_id(stu.stu_name, id_from_file[0])
         for stu in self.stu:
             if stu.stu_status == '未提交':
                 print(stu.stu_name, stu.stu_status)
+        if check_count == get_stu_len():
+            print("已收齐")
+        if check_count > get_stu_len():
+            print("收齐数量大于学生数量")
 
     def check_directory_recursive(self, path):
         path = Path(path)
